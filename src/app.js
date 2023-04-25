@@ -26,17 +26,17 @@ app.use(
     })
 );
 app.use(
-    "/regions",
+    ["/regions", "/states"],
     createProxyMiddleware({
         target: "https://energy-region-api-js.onrender.com",
         changeOrigin: true,
-    })
-);
-app.use(
-    "/states",
-    createProxyMiddleware({
-        target: "https://energy-region-api-js.onrender.com/states",
-        changeOrigin: true,
+        pathRewrite: (path, req) => {
+            if (path.startsWith("/regions")) {
+                return path.replace("/regions", "/regions");
+            } else if (path.startsWith("/states")) {
+                return path.replace("/states", "/states");
+            }
+        },
     })
 );
 
