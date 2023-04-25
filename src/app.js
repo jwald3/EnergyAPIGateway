@@ -19,10 +19,17 @@ app.use(
     })
 );
 app.use(
-    "/providers",
+    ["/providers", "/pricing_tiers"],
     createProxyMiddleware({
         target: "https://energy-provider-api.onrender.com",
         changeOrigin: true,
+        pathRewrite: (path, req) => {
+            if (path.startsWith("/providers")) {
+                return path.replace("/providers", "/providers");
+            } else if (path.startsWith("/pricing_tiers")) {
+                return path.replace("/pricing_tiers", "/pricing_tiers");
+            }
+        },
     })
 );
 app.use(
