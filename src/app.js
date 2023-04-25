@@ -12,10 +12,19 @@ let fetch;
 
 // Apply proxy middleware
 app.use(
-    "/households",
+    ["/households", "energy_usage", "locations"],
     createProxyMiddleware({
         target: "https://energy-household-api.onrender.com",
         changeOrigin: true,
+        pathRewrite: (path, req) => {
+            if (path.startsWith("/households")) {
+                return path.replace("/households", "/households");
+            } else if (path.startsWith("/energy_usage")) {
+                return path.replace("/energy_usage", "/energy_usage");
+            } else if (path.startsWith("/locations")) {
+                return path.replace("/locations", "/locations");
+            }
+        },
     })
 );
 app.use(
