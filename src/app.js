@@ -32,6 +32,13 @@ app.use(
         changeOrigin: true,
     })
 );
+app.use(
+    "/states",
+    createProxyMiddleware({
+        target: "https://energy-region-api-js.onrender.com/regions",
+        changeOrigin: true,
+    })
+);
 
 (async () => {
     // Load fetch
