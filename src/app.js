@@ -19,8 +19,8 @@ app.use(
         pathRewrite: (path, req) => {
             if (path.startsWith("/households")) {
                 return path.replace("/households", "/households");
-            } else if (path.startsWith("/energy_usage")) {
-                return path.replace("/energy_usage", "/energy_usage");
+            } else if (path.startsWith("/energy_usages")) {
+                return path.replace("/energy_usages", "/energy_usages");
             } else if (path.startsWith("/locations")) {
                 return path.replace("/locations", "/locations");
             }
