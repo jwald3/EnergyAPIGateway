@@ -12,7 +12,7 @@ let fetch;
 
 // Apply proxy middleware
 app.use(
-    ["/households", "energy_usage", "locations"],
+    ["/households", "energy_usages", "locations"],
     createProxyMiddleware({
         target: "https://energy-household-api.onrender.com",
         changeOrigin: true,
