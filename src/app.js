@@ -35,7 +35,7 @@ app.use(
 app.use(
     "/states",
     createProxyMiddleware({
-        target: "https://energy-region-api-js.onrender.com/regions",
+        target: "https://energy-region-api-js.onrender.com/states",
         changeOrigin: true,
     })
 );
