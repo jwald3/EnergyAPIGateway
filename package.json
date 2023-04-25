@@ -1,17 +1,18 @@
 {
-  "name": "energyapigateway",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^4.18.2",
-    "http-proxy-middleware": "^2.0.6",
-    "node-fetch": "^3.3.1"
-  }
+    "name": "energyapigateway",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^4.18.2",
+        "http-proxy-middleware": "^2.0.6",
+        "node-fetch": "^3.3.1"
+    }
 }
