@@ -56,6 +56,50 @@ app.use(
     })
 );
 
+app.get("/household_info/:household_id", async (req, res) => {
+    try {
+        const household_id = req.params.household_id;
+
+        const [householdRes, usageRes] = await Promise.all([
+            fetch(
+                `https://energy-household-api.onrender.com/households/${household_id}`
+            ),
+            fetch(
+                `https://energy-household-api.onrender.com/energy_usages?household_id=${household_id}`
+            ),
+        ]);
+
+        const [household, usages] = await Promise.all([
+            householdRes.json(),
+            usageRes.json(),
+        ]);
+
+        const [locationRes, providerRes] = await Promise.all([
+            fetch(
+                `https://energy-household-api.onrender.com/locations/${household.location_id}`
+            ),
+            fetch(
+                `https://energy-provider-api.onrender.com/providers/${household.provider_id}`
+            ),
+        ]);
+
+        const [location, provider] = await Promise.all([
+            locationRes.json(),
+            providerRes.json(),
+        ]);
+
+        res.json({
+            household,
+            location,
+            provider,
+            usages,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
+    }
+});
+
 (async () => {
     // Load fetch
     fetch = await import("node-fetch").then((module) => module.default);
