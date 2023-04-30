@@ -69,10 +69,15 @@ app.get("/household_info/:household_id", async (req, res) => {
             ),
         ]);
 
-        const [household, usages] = await Promise.all([
-            householdRes.json(),
-            usageRes.json(),
+        const [householdText, usagesText] = await Promise.all([
+            householdRes.text(),
+            usageRes.text(),
         ]);
+
+        const [household, usages] = [
+            JSON.parse(householdText),
+            JSON.parse(usagesText),
+        ];
 
         const [locationRes, providerRes] = await Promise.all([
             fetch(
@@ -83,16 +88,49 @@ app.get("/household_info/:household_id", async (req, res) => {
             ),
         ]);
 
-        const [location, provider] = await Promise.all([
-            locationRes.json(),
-            providerRes.json(),
+        const [locationText, providerText] = await Promise.all([
+            locationRes.text(),
+            providerRes.text(),
         ]);
+
+        const [location, provider] = [
+            JSON.parse(locationText),
+            JSON.parse(providerText),
+        ];
 
         res.json({
             household,
             location,
             provider,
             usages,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal server error");
+    }
+});
+
+app.get("/provider_pricing/:provider_id", async (req, res) => {
+    try {
+        const provider_id = req.params.provider_id;
+
+        const [providerRes, pricingTiersRes] = await Promise.all([
+            fetch(
+                `https://energy-provider-api.onrender.com/providers/${provider_id}`
+            ),
+            fetch(
+                `https://energy-provider-api.onrender.com/pricing_tiers?provider_id=${provider_id}`
+            ),
+        ]);
+
+        const [provider, pricingTiers] = await Promise.all([
+            providerRes.json(),
+            pricingTiersRes.json(),
+        ]);
+
+        res.json({
+            provider,
+            pricingTiers,
         });
     } catch (error) {
         console.error(error);
