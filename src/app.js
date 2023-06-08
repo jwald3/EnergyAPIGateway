@@ -138,6 +138,143 @@ app.get("/provider_pricing/:provider_id", async (req, res) => {
     }
 });
 
+app.get("/provider_customers", async (req, res) => {
+    try {
+        const { provider_id, region } = req.query;
+
+        let params = new URLSearchParams();
+        if (provider_id != null) {
+            params.append("provider_id", provider_id);
+        }
+
+        if (region != null) {
+            params.append("region", region);
+        }
+        
+
+        const [householdRes, providerRes, regionRes, ] = await Promise.all([
+            fetch(
+                `https://energy-household-api.onrender.com/households?provider=${provider_id}`
+            ),
+            fetch(
+                `https://energy-provider-api.onrender.com/providers/${provider_id}`
+            ),
+            fetch(
+                `https://energy-region-api-js.onrender.com/regions`
+            ),
+            
+        ]);
+
+        const [householdText, providersText, regionsText] = await Promise.all([
+            householdRes.text(),
+            providerRes.text(),
+            regionRes.text(),
+        ]);
+        
+        const [household, providers, regions] = [
+            JSON.parse(householdText),
+            JSON.parse(providersText),
+            JSON.parse(regionsText),
+        ];
+
+        console.log(providers)
+
+        const jsonResponse = {
+            "provider_id": providers.time,
+            "provider_name": providers.provider_name,
+            "currency": providers.currency,
+            "unit": providers.unit,
+            "customers": household
+        }
+        
+
+        res.json(jsonResponse);
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "There was an error fetching detailed energy usage data" })
+    }
+});
+
+
+app.get("/detailed_energy/daily", async (req, res) => {
+    try {
+        const { household_id, date, year, month } = req.query;
+
+        let params = new URLSearchParams();
+        if (household_id != null) {
+            params.append("household_id", household_id);
+        }
+        if (date != null) {
+            params.append("date", date);
+        }
+        if (year != null) {
+            params.append("year", year);
+        }
+
+        const [householdRes, usageRes, regionRes, stateRes] = await Promise.all([
+            fetch(
+                `https://energy-household-api.onrender.com/households/${household_id}`
+            ),
+            fetch(
+                `https://energy-household-api.onrender.com/energy_usages/daily?${params.toString()}`
+            ),
+            fetch(
+                `https://energy-region-api-js.onrender.com/regions`
+            ),
+            fetch(
+                `https://energy-region-api-js.onrender.com/states`
+            ),
+        ]);
+
+        const [householdText, usagesText, regionsText, statesText] = await Promise.all([
+            householdRes.text(),
+            usageRes.text(),
+            regionRes.text(),
+            stateRes.text(),
+        ]);
+        
+        console.log(`Household text: ${householdText}`)
+
+        const [household, usages, regions, states] = [
+            JSON.parse(householdText),
+            JSON.parse(usagesText),
+            JSON.parse(regionsText),
+            JSON.parse(statesText)
+        ];
+
+        const householdObject = {
+            "household_id": household.household_id,
+            "name": household.name,
+            "provider_id": household.provider_id,
+            "location_id": household.location_id,
+            "street_address": household.street_address
+        }
+
+        const jsonResponse = usages.map((usage) => (
+            {
+                "time": usage.time,
+                "energy_usage": usage.energy_usage,
+                "count": usage.count,
+                "household": householdObject
+            }
+        ))
+
+        res.json(jsonResponse);
+
+        // res.json({
+        //     household,
+        //     usages,
+        //     regions,
+        //     states
+        // });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "There was an error fetching detailed energy usage data" })
+    }
+});
+
 (async () => {
     // Load fetch
     fetch = await import("node-fetch").then((module) => module.default);
