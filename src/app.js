@@ -140,21 +140,21 @@ app.get("/provider_pricing/:provider_id", async (req, res) => {
 
 app.get("/provider_customers", async (req, res) => {
     try {
-        const { provider_id, region } = req.query;
+        const { provider_id, region_id } = req.query;
 
         let params = new URLSearchParams();
         if (provider_id != null) {
             params.append("provider_id", provider_id);
         }
 
-        if (region != null) {
-            params.append("region", region);
+        if (region_id != null) {
+            params.append("region_id", region_id);
         }
         
 
         const [householdRes, providerRes, regionRes, ] = await Promise.all([
             fetch(
-                `https://energy-household-api.onrender.com/households?provider=${provider_id}`
+                `https://energy-household-api.onrender.com/households?${params.toString()}`
             ),
             fetch(
                 `https://energy-provider-api.onrender.com/providers/${provider_id}`
